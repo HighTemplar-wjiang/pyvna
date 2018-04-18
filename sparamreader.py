@@ -62,11 +62,19 @@ class ScatterParameterReader(VNA):
         else:
             pass
 
-    def init(self):
-        """Initiate VNA remote control"""
-        if __debug__:
-            print("Warning: Automatically connect to the first device in the visa-enabled device list.")
-        self.open(self.scan()[0])
+    def init(self, address=None):
+        """Initiate VNA remote control
+
+        Args:
+            address (str, optional): The address of an resource to be opened.
+                Defaults to None, open the first scanned VISA-enabled devices.
+        """
+        if address is None:
+            if __debug__:
+                print("Warning: Automatically connect to the first device in the visa-enabled device list.")
+            self.open(self.scan()[0])
+        else:
+            self.open(address)
 
     def setup(self):
         """Setup the VNA.
@@ -155,7 +163,7 @@ class ScatterParameterReader(VNA):
         filename = input("Input filename for saving data (default {}): ".format(timeStr))
         if not filename:
             filename = timeStr
-        with open("../data/{}.csv".format(filename), "w+") as logfile:
+        with open("./data/{}.csv".format(filename), "w+") as logfile:
             # Write head.
             logfile.write("Freq")
             for parameter in self._measurementParameters:
